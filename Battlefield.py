@@ -4,8 +4,8 @@ from Robot import Robot
 class Battlefield:
     
     def __init__(self):
-        self.robot_one = Robot()
-        self.dino_one = Dinosaur()
+        self.robot_one = Robot("R2D2", 100)
+        self.dino_one = Dinosaur("Rex", 100, 50)
         pass
 
     def display_welcome(self):
@@ -14,19 +14,29 @@ class Battlefield:
         pass
 
     def battle_phase(self):
-        dino_hp = self.dino_one.health
-        robot_hp = self.robot_one.health
-        self.robot_one.health = self.dino_one.attack(robot_hp)
-        self.dino_one.health = self.robot_one.attack(dino_hp)
-        if self.robot_one.health <= 0 and self.dino_one.health <= 0:
-            self.display_winner()
+        self.dino_one.attack(self.robot_one.health)
+        defeat = False
+        while defeat == False:
+            if self.dino_one.health > 0:
+                self.robot_one.health -= self.dino_one.attack_power
+                print (f"Rex attacked dealing {self.dino_one.attack_power} damage! \n R2D2 health is now {self.robot_one.health}")
+                self.robot_one.attack(self.dino_one.health)
+            elif self.dino_one.health <= 0:
+                defeat = True
+                return self.display_winner()
+            if self.robot_one.health > 0:
+                self.dino_one.health -= self.robot_one.active_weapon.attack_power
+                print (f"R2D2 attacked dealing {self.robot_one.active_weapon.attack_power} damage! \n Rex health is now {self.dino_one.health}")
+            elif self.robot_one.health <= 0:
+                defeat = True    
         else:
-            self.battle_phase()
+            defeat = True
+            return self.display_winner()
 
     def display_winner(self):
-        if self.dino_one.health > 0:
+        if self.dino_one.health >= 0:
             print (f"{self.dino_one.name} Wins!")
-        elif self.robot_one.health > 0:
+        elif self.robot_one.health >= 0:
             print (f"{self.robot_one.name} Wins!")
         return
         
@@ -34,5 +44,4 @@ class Battlefield:
     def run_game(self):
         self.display_welcome()
         self.battle_phase()
-        self.display_winner()
         pass
